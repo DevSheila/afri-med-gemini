@@ -1,1 +1,0 @@
-# afri-med-gemini
