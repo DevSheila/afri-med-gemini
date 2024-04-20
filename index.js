@@ -15,6 +15,10 @@ const API_KEY = process.env.VITE_GEMINI_API_KEY;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+app.get('/', (req, res) => {
+
+    res.send("hello");
+  });
 // app.get('/api/gemini',async (req, res) => {
 app.post('/api/gemini', async(req, res) => {
     const {prompt}  = req.body;
