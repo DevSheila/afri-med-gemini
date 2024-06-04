@@ -1,0 +1,47 @@
+require('dotenv').config();
+const express = require('express');
+const {
+    GoogleGenerativeAI,
+    HarmCategory,
+    HarmBlockThreshold,
+  }  = require("@google/generative-ai");
+
+const  {removeSpecialCharacters} = require("./helpers/responseFormatter");
+  
+const app = express();
+const MODEL_NAME = process.env.VITE_GEMINI_MODEL_NAME;
+const API_KEY = process.env.VITE_GEMINI_API_KEY;
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+app.get('/', (req, res) => {
+
+    res.send("hello");
+  });
+app.post('/api/gemini', async(req, res) => {
+    const {prompt}  = req.body;
+    try{
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+      
+        const response = await model.generateContent(prompt)
+        const result = response.response;
+
+        let cleanText = await removeSpecialCharacters(result.text());
+
+        res.json({"response":cleanText});
+    
+    }catch(error){
+        console.log("error",error)
+        res.json({"error":error});
+
+    }
+    
+});
+
+// Start the server
+const port = process.env.PORT || 5000;
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+});
